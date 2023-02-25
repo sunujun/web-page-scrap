@@ -9,6 +9,7 @@ import { Button } from '../components/Button';
 import { Typography } from '../components/Typography';
 import { Spacer } from '../components/Spacer';
 import { RemoteImage } from '../components/RemoteImage';
+import { Icon } from '../components/Icon';
 import { atomLinkList } from '../states/atomLinkList';
 import { getOpenGraphData } from '../utils/OpenGraphTagUtils';
 import { getClipboardString } from '../utils/ClipboardUtils';
@@ -88,12 +89,32 @@ export const AddLinkScreen = () => {
                     paddingTop: 32,
                     paddingHorizontal: 24,
                 }}>
-                <SingleLineInput
-                    value={url}
-                    onChangeText={setUrl}
-                    onSubmitEditing={onSubmitEditing}
-                    placeholder="https://example.com"
-                />
+                <View>
+                    <SingleLineInput
+                        value={url}
+                        onChangeText={setUrl}
+                        placeholder="https://example.com"
+                        onSubmitEditing={onSubmitEditing}
+                    />
+                    <View
+                        style={{
+                            position: 'absolute',
+                            top: 0,
+                            bottom: 0,
+                            right: 0,
+                            borderWidth: 1,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}>
+                        <Button
+                            onPress={() => {
+                                setUrl('');
+                                setMetadata(null);
+                            }}>
+                            <Icon name="close" color="black" size={20} />
+                        </Button>
+                    </View>
+                </View>
                 {loading ? (
                     <>
                         <Spacer space={20} />
