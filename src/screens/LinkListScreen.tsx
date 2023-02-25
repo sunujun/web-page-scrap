@@ -1,19 +1,22 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, FlatList } from 'react-native';
+import { useRecoilValue } from 'recoil';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button } from '../components/Button';
 import { Header } from '../components/Header/Header';
-import { Spacer } from '../components/Spacer';
-import { Typography } from '../components/Typography';
 import { Icon } from '../components/Icon';
+import { Typography } from '../components/Typography';
+import { Spacer } from '../components/Spacer';
 import { LinkStackScreenProps } from '../navigation/types';
+import { atomLinkList, LinkItem } from '../states/atomLinkList';
 
 export const LinkListScreen = () => {
     const navigation = useNavigation<LinkStackScreenProps<'LinkList'>['navigation']>();
     const safeAreaInset = useSafeAreaInsets();
-    const onPressButton = () => {
-        navigation.navigate('LinkDetail');
+    const data = useRecoilValue(atomLinkList);
+    const onPressListItem = (item: LinkItem) => {
+        navigation.navigate('LinkDetail', { item: item });
     };
     const onPressAddButton = () => {
         navigation.navigate('AddLink');
@@ -26,15 +29,29 @@ export const LinkListScreen = () => {
                     <Header.Title title="LINK LIST" />
                 </Header.Group>
             </Header>
-            <View style={{ flex: 1 }}>
-                <Button onPress={onPressButton}>
-                    <Typography>Link Detail로 이동</Typography>
-                </Button>
-                <Spacer space={12} />
-                <Button onPress={onPressAddButton}>
-                    <Typography>링크 등록하기로 이동</Typography>
-                </Button>
-            </View>
+            <FlatList
+                style={{ flex: 1 }}
+                data={data.list}
+                renderItem={({ item }) => {
+                    return (
+                        <Button
+                            onPress={() => {
+                                onPressListItem(item);
+                            }}
+                            paddingHorizontal={24}
+                            paddingVertical={24}>
+                            <View>
+                                <Typography fontSize={20}>{item.link}</Typography>
+                                <Spacer space={4} />
+                                <Typography fontSize={16} color="gray">
+                                    {item.title !== '' ? item.title.slice(0, 20) + ' | ' : ''}
+                                    {new Date(item.createdAt).toLocaleString()}
+                                </Typography>
+                            </View>
+                        </Button>
+                    );
+                }}
+            />
             <View style={{ position: 'absolute', right: 24, bottom: 24 + safeAreaInset.bottom }}>
                 <Button onPress={onPressAddButton}>
                     <View
