@@ -1,15 +1,24 @@
 import React, { useState } from 'react';
-import { View, TextInput, StyleProp, TextStyle } from 'react-native';
+import {
+    View,
+    TextInput,
+    StyleProp,
+    TextStyle,
+    NativeSyntheticEvent,
+    TextInputSubmitEditingEventData,
+} from 'react-native';
 
 export const SingleLineInput = ({
     value,
     onChangeText,
+    onSubmitEditing,
     placeholder,
     style,
     fontSize,
 }: {
     value?: string;
     onChangeText?: (text: string) => void;
+    onSubmitEditing?: (e: NativeSyntheticEvent<TextInputSubmitEditingEventData>) => void;
     placeholder?: string;
     style?: StyleProp<TextStyle>;
     fontSize?: number;
@@ -38,6 +47,7 @@ export const SingleLineInput = ({
                 onBlur={() => {
                     setFocused(false);
                 }}
+                onSubmitEditing={onSubmitEditing}
             />
         </View>
     );
