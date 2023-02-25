@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useWindowDimensions, View } from 'react-native';
 import { useSetRecoilState } from 'recoil';
 import { useNavigation } from '@react-navigation/native';
@@ -11,8 +11,9 @@ import { Spacer } from '../components/Spacer';
 import { RemoteImage } from '../components/RemoteImage';
 import { atomLinkList } from '../states/atomLinkList';
 import { getOpenGraphData } from '../utils/OpenGraphTagUtils';
+import { getClipboardString } from '../utils/ClipboardUtils';
 
-interface Metadata {
+export interface Metadata {
     image: string;
     title: string;
     description: string;
@@ -35,8 +36,8 @@ export const AddLinkScreen = () => {
         updateList(prevState => {
             const list = [
                 {
-                    title: '',
-                    image: '',
+                    title: metadata?.title ?? '',
+                    image: metadata?.image ?? '',
                     link: url,
                     createdAt: new Date().toISOString(),
                 },
@@ -52,6 +53,22 @@ export const AddLinkScreen = () => {
         const result = await getOpenGraphData(url);
         setMetadata(result);
     };
+    const onGetClipboardString = async () => {
+        const result = await getClipboardString();
+        if (result.startsWith('http://') || result.startsWith('https://')) {
+            setUrl(result);
+            const ogResult = await getOpenGraphData(result);
+            setMetadata({
+                title: ogResult.title,
+                image: ogResult.image,
+                description: ogResult.description,
+            });
+        }
+    };
+
+    useEffect(() => {
+        onGetClipboardString();
+    }, []);
 
     return (
         <View style={{ flex: 1 }}>
